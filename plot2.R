@@ -1,20 +1,22 @@
 plot2 <- function() {
-	#Read and Load Data
-dataset <- read.table("~/Desktop/Data Science Specialization/Exploratory Data Analysis/Project 1/household_power_consumption.txt", Header=TRUE, sep = ";", na.strings = "?")
+### Read and Load Data
+dataset <- read.table("household_power_consumption.txt", header=TRUE, sep = ";",  stringsAsFactors=F)
 
-#Changing Date Format for the two dates
-Date1 <- strptime("01/02/2007", format='%d/%m/%Y')
-Date2 <- strptime("02/02/2007", format='%d/%m/%Y')
+### Change Date Format 
+dataset$Date <- as.Date(dataset$Date, format="%d/%m/%Y")
 
-#Subset Data
-DataSubset <- subset(dataset, strptime(dataset$Date, format=='%d/%m/%Y') >= Date1 & strptime(dataset$Date, format =='%d/%m/%Y') <= Date2)
+### Subset Data
+subsetdata <- dataset[dataset$Date %in% as.Date(c('01/02/2007', '02/02/2007'), "%d/%m/%Y"),]
 
-#Date format
-dataset$DateTime <- strptime(paste(myfile$Date, myfile$Time), format='%d/%m/%Y %H:%M:%S')
+## Convert dates into POSIXct format
+dt <- paste(as.Date(subsetdata$Date), subsetdata$Time)
+subsetdata$DT <- as.POSIXct(dt)
 
 #Plot 2
-png(file="plot2.png", width=480, height=480, units="px")
-with(dataset, plot(dataset$DateTime, dataset$Global_active_power, xlab = "", ylab = "Global Active Power (kilowatts)", main ="", type = "1", asp= "square"))
+globalactivepower <- as.numeric(subsetdata$Global_active_power)
+plot(subsetdata$DT, globalactivepower, xlab = "", ylab = "Global Active Power (kilowatts)", main ="", type ="l")
+
+png(file="plot2.png", width=480, height=480)
 
 dev.off()
 

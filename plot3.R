@@ -1,24 +1,27 @@
 plot3 <- function() {
-	#Read and Load Data
-dataset <- read.table("~/Desktop/Data Science Specialization/Exploratory Data Analysis/Project 1/household_power_consumption.txt", Header=TRUE, sep = ";", na.strings = "?")
+### Read and Load Data
+dataset <- read.table("household_power_consumption.txt", header=TRUE, sep = ";",  stringsAsFactors=F)
 
-#Changing Date Format for the two dates
-Date1 <- strptime("01/02/2007", format='%d/%m/%Y')
-Date2 <- strptime("02/02/2007", format='%d/%m/%Y')
+### Change Date Format 
+dataset$Date <- as.Date(dataset$Date, format="%d/%m/%Y")
 
-#Subset Data
-DataSubset <- subset(dataset, strptime(dataset$Date, format=='%d/%m/%Y') >= Date1 & strptime(dataset$Date, format =='%d/%m/%Y') <= Date2)
+### Subset Data
+subsetdata <- dataset[dataset$Date %in% as.Date(c('01/02/2007', '02/02/2007'), "%d/%m/%Y"),]
 
-#Date format
-dataset$DateTime <- strptime(paste(myfile$Date, myfile$Time), format='%d/%m/%Y %H:%M:%S')
+## Convert dates into POSIXct format
+dt <- paste(as.Date(subsetdata$Date), subsetdata$Time)
+subsetdata$DT <- as.POSIXct(dt)
 
 #Plot 3
-png(file="plot3.png", width=480, height=480, units="px")
-with(dataset, plot(dataset$DateTime, Sub_metering_1, xlab = "", ylab = "Energy sub metering", main ="", type = "n", asp= "square"))
-with(dataset, points(dataset$DateTime, Sub_metering_1, type="1", col="black"))
-with(dataset, points(dataset$DateTime, Sub_metering_2, type="1", col="red" ))
-with(dataset, points(dataset$DateTime, Sub_metering_3, type="1", col="blue"))
+with(subsetdata, plot(subsetdata$DT, Sub_metering_1, xlab = "", ylab = "Energy sub metering", main ="", type = "l", asp= "square"))
+with(subsetdata, points(subsetdata$DT, Sub_metering_1, type="l", col="black"))
+with(subsetdata, points(subsetdata$DT, Sub_metering_2, type="l", col="red" ))
+with(subsetdata, points(subsetdata$DT, Sub_metering_3, type="l", col="blue"))
+
 legend("topright", lty = c(1,1), col = c("black", "blue", "red"), legend= c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), box.lwd=0, bow.col ="white")
+
+png(file="plot3.png", width=480, height=480, units="px")
+
 dev.off()
 
 	
